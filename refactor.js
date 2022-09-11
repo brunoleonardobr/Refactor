@@ -8,14 +8,11 @@ function statement(invoice, plays) {
   const format = new Intl.NumberFormat('en-US', { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format
 
   for (let perf of invoice.performances) {
-    //replace temp with query
-    const play = playFor(perf)
-
-    //extract function
-    let thisAmount = amountFor(play, perf);
+    //extract function, replace temp with query, inline variable
+    let thisAmount = amountFor(playFor(perf), perf);
     volumeCredits += Math.max(perf.audience - 30, 0)
-    if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5)
-    result += `${play.name}:${format(thisAmount / 100)} (${perf.audience} seats)\n`
+    if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5)
+    result += `${playFor(perf).name}:${format(thisAmount / 100)} (${perf.audience} seats)\n`
     totalAmount += thisAmount
   }
   result += `Amount owrd is ${format(totalAmount / 100)}\n`
