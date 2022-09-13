@@ -8,10 +8,15 @@ function statement(invoice, plays) {
 
   for (let perf of invoice.performances) {
     //extract function, replace temp with query, inline variable
-    volumeCredits += volumeCreditsFor(perf);
     result += `${playFor(perf).name}:${usd(amountFor(perf))} (${perf.audience} seats)\n`
     totalAmount += amountFor(perf)
   }
+
+  //split loop
+  for (let perf of invoice.performances) {
+    volumeCredits += volumeCreditsFor(perf);
+  }
+
   result += `Amount owrd is ${usd(totalAmount)}\n`
   result += `You earned ${volumeCredits} credits\n`
   return result
