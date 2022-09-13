@@ -9,20 +9,27 @@ function statement(invoice, plays) {
 
   for (let perf of invoice.performances) {
     //extract function, replace temp with query, inline variable
-    let thisAmount = amountFor(perf);
-    volumeCredits += Math.max(perf.audience - 30, 0)
-    if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5)
-    result += `${playFor(perf).name}:${format(thisAmount / 100)} (${perf.audience} seats)\n`
-    totalAmount += thisAmount
+    volumeCredits += volumeCreditsFor(perf);
+    result += `${playFor(perf).name}:${format(amountFor(perf) / 100)} (${perf.audience} seats)\n`
+    totalAmount += amountFor(perf)
   }
   result += `Amount owrd is ${format(totalAmount / 100)}\n`
   result += `You earned ${volumeCredits} credits\n`
   return result
 
+  function volumeCreditsFor(aPerformance) {
+    let result = 0
+    result += Math.max(aPerformance.audience - 30, 0);
+    if ("comedy" === playFor(aPerformance).type)
+      volumeCredits += Math.floor(aPerformance.audience / 5);
+    return result
+  }
+
   function playFor(aPerformance) {
     return plays[aPerformance.playID];
   }
 
+  //change function declaration
   function amountFor(aPerformance) {
     let result = 0;
     switch (playFor(aPerformance).type) {
