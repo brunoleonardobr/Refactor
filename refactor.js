@@ -12,14 +12,19 @@ function statement(invoice, plays) {
   }
 
   //split loop - slide statements
-  let volumeCredits = 0;
-  for (let perf of invoice.performances) {
-    volumeCredits += volumeCreditsFor(perf);
-  }
+  let volumeCredits = totalVolumeCredits();
 
-  result += `Amount owrd is ${usd(totalAmount)}\n`
+  result += `Amount owed is ${usd(totalAmount)}\n`
   result += `You earned ${volumeCredits} credits\n`
   return result
+
+  function totalVolumeCredits() {
+    let volumeCredits = 0;
+    for (let perf of invoice.performances) {
+      volumeCredits += volumeCreditsFor(perf);
+    }
+    return volumeCredits;
+  }
 
   function usd(aNumber) {
     return new Intl.NumberFormat('en-US', { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(aNumber / 100);
