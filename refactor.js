@@ -9,15 +9,15 @@ function statement(invoice, plays) {
   for (let perf of invoice.performances) {
     //extract function, replace temp with query, inline variable
     volumeCredits += volumeCreditsFor(perf);
-    result += `${playFor(perf).name}:${format(amountFor(perf) / 100)} (${perf.audience} seats)\n`
+    result += `${playFor(perf).name}:${usd(amountFor(perf))} (${perf.audience} seats)\n`
     totalAmount += amountFor(perf)
   }
-  result += `Amount owrd is ${format(totalAmount / 100)}\n`
+  result += `Amount owrd is ${usd(totalAmount)}\n`
   result += `You earned ${volumeCredits} credits\n`
   return result
 
-  function format(aNumber) {
-    return new Intl.NumberFormat('en-US', { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(aNumber);
+  function usd(aNumber) {
+    return new Intl.NumberFormat('en-US', { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(aNumber / 100);
   }
 
   function volumeCreditsFor(aPerformance) {
