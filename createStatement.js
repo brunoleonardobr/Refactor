@@ -19,10 +19,6 @@ export default function createStatementData(invoice, plays) {
     return plays[aPerformance.playID]
   }
 
-  function createPerformanceCalculator(aPerformance, aPlay) {
-    return new PerformanceCalculator(aPerformance, aPlay)
-  }
-
   function totalAmount(data) {
     return data.performances.reduce((total, p) => total + p.amount, 0)
   }
@@ -32,12 +28,29 @@ export default function createStatementData(invoice, plays) {
   }
 }
 
+function createPerformanceCalculator(aPerformance, aPlay) {
+  switch (aPlay.type) {
+    case "tragedy": return new TragedyCalculator(aPerformance, aPlay)
+    case "comedy": return new ComedyCalculator(aPerformance, aPlay)
+    default:
+      throw new Error(`unknown type: ${aPlay.type}`)
+  }
+}
 class PerformanceCalculator {
   constructor(aPerformance, aPlay) {
     this.performance = aPerformance
     this.play = aPlay
   }
 
+  get amount() {
+    throw new Error('subclass responsability')
+  }
+
+  get volumeCredits() {
+    return Math.max(this.performance.audience - 30, 0)
+  }
+}
+class TragedyCalculator extends PerformanceCalculator {
   get amount() {
     let result = 0
     switch (this.play.type) {
@@ -47,6 +60,21 @@ class PerformanceCalculator {
           result += 1000 * (this.performance.audience - 30)
         }
         break
+      case "comedy":
+        throw 'bad thing'
+      default:
+        throw new Error(`unknown type: ${this.play.type}`)
+    }
+    return result
+  }
+}
+
+class ComedyCalculator extends PerformanceCalculator {
+  get amount() {
+    let result = 0
+    switch (this.play.type) {
+      case "tragedy":
+        throw 'bad thing'
       case "comedy":
         result = 30000
         if (this.performance.audience > 20) {
@@ -62,10 +90,7 @@ class PerformanceCalculator {
   }
 
   get volumeCredits() {
-    let result = 0
-    result += Math.max(this.performance.audience - 30, 0)
-    if ("comedy" === this.play.type)
-      result += Math.floor(this.performance.audience / 5)
-    return result
+    return super.volumeCredits +
+      Math.floor(this.performance.audience / 5)
   }
 }
