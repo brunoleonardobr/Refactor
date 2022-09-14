@@ -2,28 +2,29 @@ const plays = require('./plays.json')
 const invoice = require('./invoices.json')
 
 function statement(invoice, plays) {
-  let totalAmount = 0;
   let result = `Statement for ${invoice.customer}\n`
-
   for (let perf of invoice.performances) {
-    //extract function, replace temp with query, inline variable
     result += `${playFor(perf).name}:${usd(amountFor(perf))} (${perf.audience} seats)\n`
-    totalAmount += amountFor(perf)
   }
 
-  //split loop - slide statements
-  let volumeCredits = totalVolumeCredits();
-
-  result += `Amount owed is ${usd(totalAmount)}\n`
-  result += `You earned ${volumeCredits} credits\n`
+  result += `Amount owed is ${usd(totalAmount())}\n`
+  result += `You earned ${totalVolumeCredits()} credits\n`
   return result
 
-  function totalVolumeCredits() {
-    let volumeCredits = 0;
+  function totalAmount() {
+    let result = 0;
     for (let perf of invoice.performances) {
-      volumeCredits += volumeCreditsFor(perf);
+      result += amountFor(perf)
     }
-    return volumeCredits;
+    return result
+  }
+
+  function totalVolumeCredits() {
+    let result = 0;
+    for (let perf of invoice.performances) {
+      result += volumeCreditsFor(perf);
+    }
+    return result;
   }
 
   function usd(aNumber) {
@@ -34,7 +35,7 @@ function statement(invoice, plays) {
     let result = 0
     result += Math.max(aPerformance.audience - 30, 0);
     if ("comedy" === playFor(aPerformance).type)
-      volumeCredits += Math.floor(aPerformance.audience / 5);
+      result += Math.floor(aPerformance.audience / 5);
     return result
   }
 
